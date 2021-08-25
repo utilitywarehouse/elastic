@@ -254,7 +254,11 @@ func (r *BulkIndexRequest) Source() ([]string, error) {
 			var err error
 
 			if r.useProtoJSON {
-				body, err = protojson.Marshal(r.protoDoc)
+				enc := protojson.MarshalOptions{
+					EmitUnpopulated: true,
+				}
+
+				body, err = enc.Marshal(r.protoDoc)
 			} else {
 				body, err = json.Marshal(r.doc)
 			}
