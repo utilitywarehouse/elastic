@@ -6,6 +6,9 @@ on:
     branches:
       - '*.v7'
 name: Test v7
+permissions:
+  contents: read
+
 jobs:
   test:
     strategy:
@@ -15,20 +18,25 @@ jobs:
     name: Run ${{ matrix.go }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+      with:
+        egress-policy: audit
+
     - name: Prepare tests
       run: |
         sudo apt-get install -y netcat
         sudo sysctl -w vm.max_map_count=262144
 
     - name: Setup Go ${{ matrix.go }}
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@bfdd3570ce990073878bf10f6b2d79082de49492 # v2.2.0
       with:
         go-version: ${{ matrix.go }}
 
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@8492260343ad570701412c2f464a5877dc76bace # v2
       with:
         path: |
           ~/.cache/go-build
